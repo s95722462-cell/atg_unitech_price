@@ -1,6 +1,8 @@
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
     const voiceSearchButton = document.getElementById('voiceSearchButton');
+    const micIcon = document.getElementById('micIcon');
+    const voiceSearchText = document.getElementById('voiceSearchText');
     const resultsTableBody = document.getElementById('resultsTableBody');
     const errorMessageDiv = document.getElementById('errorMessage');
     let productData = [];
@@ -81,6 +83,9 @@
             errorMessageDiv.style.display = 'none';
             searchInput.value = ''; // Clear previous input
             voiceSearchButton.disabled = true;
+            micIcon.style.display = 'none';
+            voiceSearchText.style.display = 'inline';
+            voiceSearchText.textContent = '말씀해주세요...'; // Explicitly set text
             // Ensure recognition is stopped before starting a new one
             recognition.stop();
             recognition.start();
@@ -97,13 +102,17 @@
 
         recognition.onspeechend = () => {
             voiceSearchButton.disabled = false;
-            voiceSearchButton.innerHTML = '<i class="fas fa-microphone"></i>'; // Restore icon
+            micIcon.style.display = 'inline';
+            voiceSearchText.style.display = 'none';
+            voiceSearchText.textContent = ''; // Explicitly clear text
             recognition.stop();
         };
 
         recognition.onerror = (event) => {
             voiceSearchButton.disabled = false;
-            voiceSearchButton.innerHTML = '<i class="fas fa-microphone"></i>'; // Restore icon
+            micIcon.style.display = 'inline';
+            voiceSearchText.style.display = 'none';
+            voiceSearchText.textContent = ''; // Explicitly clear text
             errorMessageDiv.textContent = `음성 인식 오류: ${event.error}`;
             errorMessageDiv.style.display = 'block';
             console.error('Speech recognition error:', event.error);

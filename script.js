@@ -1,9 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const searchButton = document.getElementById('searchButton');
+    const voiceSearchButton = document.getElementById('voiceSearchButton');
     const resultsTableBody = document.getElementById('resultsTableBody');
     const errorMessageDiv = document.getElementById('errorMessage');
     let productData = [];
+
+    // Check for Web Speech API compatibility
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+    const SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+
+    if (!SpeechRecognition) {
+        voiceSearchButton.style.display = 'none'; // Hide button if not supported
+        console.warn('Web Speech API is not supported in this browser.');
+    }
 
     async function loadProductData() {
         errorMessageDiv.style.display = 'none';
@@ -59,6 +69,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Voice search functionality
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false; // Only capture a single phrase
+        recognition.lang = 'ko-KR'; // Set language to Korean
+        recognition.interimResults = false; // Only return final results
+        recognition.maxAlternatives = 1; // Only return the most likely result
+
+        voiceSearchButton.addEventListener('click', () => {
+            errorMessageDiv.style.display = 'none';
+            searchInput.value = ''; // Clear previous input
+            voiceSearchButton.textContent = '말씀해주세요...';
+            voiceSearchButton.disabled = true;
+            recognition.start();
+        });
+
+        recognition.onresult = (event) => {
+            const speechResult = event.results[0][0].transcript;
+            // Remove spaces from alphanumeric sequences for product codes/names
+            const processedSpeechResult = speechResult.replace(/\s/g, '');
+            searchInput.value = processedSpeechResult;
+            console.log('음성 인식 결과:', speechResult, '-> 처리된 결과:', processedSpeechResult);
+            searchProducts(); // Trigger search after voice input
+        };
+
+        recognition.onspeechend = () => {
+            voiceSearchButton.textContent = '음성 검색';
+            voiceSearchButton.disabled = false;
+            recognition.stop();
+        };
+
+        recognition.onerror = (event) => {
+            voiceSearchButton.textContent = '음성 검색';
+            voiceSearchButton.disabled = false;
+            errorMessageDiv.textContent = `음성 인식 오류: ${event.error}`;
+            errorMessageDiv.style.display = 'block';
+            console.error('Speech recognition error:', event.error);
+        };
+    }
+
     searchButton.addEventListener('click', searchProducts);
     searchInput.addEventListener('keyup', (event) => {
         if (event.key === 'Enter') {
@@ -67,4 +117,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     loadProductData();
-});

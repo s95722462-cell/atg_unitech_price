@@ -89,8 +89,8 @@
 
         recognition.onresult = (event) => {
             const speechResult = event.results[0][0].transcript;
-            // Remove spaces from alphanumeric sequences for product codes/names
-            const processedSpeechResult = speechResult.replace(/\s/g, '');
+            // Remove spaces and hyphens from alphanumeric sequences for product codes/names
+            const processedSpeechResult = speechResult.replace(/[-\s]/g, '');
             searchInput.value = processedSpeechResult;
             console.log('음성 인식 결과:', speechResult, '-> 처리된 결과:', processedSpeechResult);
             searchProducts(); // Trigger search after voice input

@@ -80,7 +80,6 @@
         voiceSearchButton.addEventListener('click', () => {
             errorMessageDiv.style.display = 'none';
             searchInput.value = ''; // Clear previous input
-            voiceSearchButton.textContent = '말씀해주세요...';
             voiceSearchButton.disabled = true;
             // Ensure recognition is stopped before starting a new one
             recognition.stop();
@@ -97,13 +96,11 @@
         };
 
         recognition.onspeechend = () => {
-            voiceSearchButton.textContent = '음성 검색';
             voiceSearchButton.disabled = false;
             recognition.stop();
         };
 
         recognition.onerror = (event) => {
-            voiceSearchButton.textContent = '음성 검색';
             voiceSearchButton.disabled = false;
             errorMessageDiv.textContent = `음성 인식 오류: ${event.error}`;
             errorMessageDiv.style.display = 'block';

@@ -97,11 +97,13 @@
 
         recognition.onspeechend = () => {
             voiceSearchButton.disabled = false;
+            voiceSearchButton.innerHTML = '<i class="fas fa-microphone"></i>'; // Restore icon
             recognition.stop();
         };
 
         recognition.onerror = (event) => {
             voiceSearchButton.disabled = false;
+            voiceSearchButton.innerHTML = '<i class="fas fa-microphone"></i>'; // Restore icon
             errorMessageDiv.textContent = `음성 인식 오류: ${event.error}`;
             errorMessageDiv.style.display = 'block';
             console.error('Speech recognition error:', event.error);

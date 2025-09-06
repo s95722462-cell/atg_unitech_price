@@ -82,6 +82,8 @@
             searchInput.value = ''; // Clear previous input
             voiceSearchButton.textContent = '말씀해주세요...';
             voiceSearchButton.disabled = true;
+            // Ensure recognition is stopped before starting a new one
+            recognition.stop();
             recognition.start();
         });
 
@@ -106,6 +108,7 @@
             errorMessageDiv.textContent = `음성 인식 오류: ${event.error}`;
             errorMessageDiv.style.display = 'block';
             console.error('Speech recognition error:', event.error);
+            recognition.stop(); // Explicitly stop on error
         };
     }
 
